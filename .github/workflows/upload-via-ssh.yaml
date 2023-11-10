@@ -7,22 +7,19 @@ on:
         description: Key of the cached build used for actions/cache
         required: true
         type: string
+    secrets:
       ssh-host:
         description: SSH host
         required: true
-        type: string
       ssh-key:
         description: Private SSH Key for the remote server. The public key has to be added to the remote server.
         required: true
-        type: string
       ssh-user:
         description: SSH user
         required: true
-        type: string
       deployment-destination:
         description: Path on the remote server to upload the files to
         required: true
-        type: string
 
 jobs:
   upload:
@@ -38,11 +35,11 @@ jobs:
         if: steps.cache.outputs.cache-hit == 'true'
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ inputs.ssh-key }}
+          key: ${{ secrets.ssh-key }}
           known_hosts: '--placeholder-host'
 
       - name: Adding known hosts
-        run: ssh-keygen -H ${{ inputs.ssh-host }} >> ~/.ssh/known_hosts
+        run: ssh-keygen -H ${{ secrets.ssh-host }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
-        run: rsync -avzn ./ ${{ inputs.ssh-user }}@${{ inputs.ssh-host }}:${{ inputs.deployment-destination }}
+        run: rsync -avzn ./ ${{ secrets.ssh-user }}@${{ secrets.ssh-host }}:${{ secrets.deployment-destination }}
