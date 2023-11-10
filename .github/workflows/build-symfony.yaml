@@ -22,6 +22,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build-cache-key: build-${{ github.run_id }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -58,3 +60,8 @@ jobs:
         run: |
           npm install --force
           npm run build
+
+      - name: Cache build
+        uses: actions/cache@2
+        with:
+          key: build-${{ github.run_id }}
