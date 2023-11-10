@@ -62,6 +62,6 @@ jobs:
           npm run build
 
       - name: Cache build
-        uses: actions/cache@2
+        uses: actions/cache@v2
         with:
           key: build-${{ github.run_id }}
