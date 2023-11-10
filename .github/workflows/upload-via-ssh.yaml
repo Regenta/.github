@@ -54,3 +54,11 @@ jobs:
 
       - name: Deploy with scp
         run: scp ../build.tar.gz ${{ secrets.ssh-user }}@${{ secrets.ssh-host }}:${{ secrets.deployment-destination }}
+
+      - name: Extract archive on remote host
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.ssh-host }}
+          username: ${{ secrets.ssh-user }}
+          key_path: /home/runner/.ssh
+          script: tar -xf ${{ secrets.deployment-destination }}/build.tar.gz
