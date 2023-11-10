@@ -50,7 +50,7 @@ jobs:
           rm -r ./.env.local
 
       - name: Create archive
-        run: tar -zcvf build.tar.gz .
+        run: tar -zcvf ../build.tar.gz .
 
       - name: Deploy with scp
-        run: scp ./build.tar.gz ${{ secrets.ssh-user }}@${{ secrets.ssh-host }}:${{ secrets.deployment-destination }}
+        run: scp ../build.tar.gz ${{ secrets.ssh-user }}@${{ secrets.ssh-host }}:${{ secrets.deployment-destination }}
