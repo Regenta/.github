@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@v3
         with:
           key: ${{ inputs.build-cache-key }}
-          path: ./
+          path: ./build
 
       - name: Install SSH Key
         if: steps.cache.outputs.cache-hit == 'true'
@@ -45,7 +45,7 @@ jobs:
 
       - name: Create archive
         if: steps.cache.outputs.cache-hit == 'true'
-        run: tar --exclude='./node_modules' --exclude='./.github' --exclude='./tests' --exclude='.env.local' --exclude='./.git' -zcvf build.tar.gz .
+        run: tar --exclude='./node_modules' --exclude='./.github' --exclude='./tests' --exclude='.env.local' --exclude='./.git' -zcvf build.tar.gz build
 
       - name: Deploy with scp
         if: steps.cache.outputs.cache-hit == 'true'
