@@ -18,6 +18,10 @@ on:
         default: "--no-dev --prefer-dist"
         required: false
         type: "string"
+    outputs:
+      build-cache-key:
+        description: Cache key used for actions/cache
+        value: ${{ jobs.build.outputs.build-cache-key }}
 
 jobs:
   build:
