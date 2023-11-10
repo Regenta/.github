@@ -1,0 +1,60 @@
+name: Build Symfony
+
+on:
+  workflow_call:
+    inputs:
+      symfony-version:
+        description: "The Symfony version to use when running the job"
+        default: "6.3"
+        required: false
+        type: "string"
+      php-version:
+        description: "The PHP version to use when running the job"
+        default: "8.1"
+        required: false
+        type: "string"
+      composer-options:
+        description: "Additional flags for the composer install command."
+        default: "--no-dev --prefer-dist"
+        required: false
+        type: "string"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Make production envfile
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_APP_ENV: prod
+          envkey_APP_DEBUG: false
+          file_name: .env.local
+
+      # - setup php and install composer dependencies ---
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ inputs.php-version }}"
+          extensions: ctype, fileinfo, gd, iconv, json, pdo, pdo_mysql
+        env:
+          update: true
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "${{ inputs.composer-options }}"
+
+      # - setup yarn and build webpack ---
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Build assets
+        run: |
+          npm install --force
+          npm run build
