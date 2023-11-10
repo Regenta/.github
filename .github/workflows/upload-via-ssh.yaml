@@ -40,7 +40,9 @@ jobs:
           known_hosts: '--placeholder-host'
 
       - name: Adding known hosts
+        if: steps.cache.outputs.cache-hit == 'true'
         run: ssh-keygen -H ${{ secrets.ssh-host }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
+        if: steps.cache.outputs.cache-hit == 'true'
         run: rsync -avzn ./ ${{ secrets.ssh-user }}@${{ secrets.ssh-host }}:${{ secrets.deployment-destination }}
