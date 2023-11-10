@@ -1,0 +1,48 @@
+name: Upload via SSH
+
+on:
+  workflow_call:
+    inputs:
+      build-cache-key:
+        description: Key of the cached build used for actions/cache
+        required: true
+        type: string
+      ssh-host:
+        description: SSH host
+        required: true
+        type: string
+      ssh-key:
+        description: Private SSH Key for the remote server. The public key has to be added to the remote server.
+        required: true
+        type: string
+      ssh-user:
+        description: SSH user
+        required: true
+        type: string
+      deployment-destination:
+        description: Path on the remote server to upload the files to
+        required: true
+        type: string
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore cached build
+        id: cache
+        uses: actions/cache@v3
+        with:
+          key: ${{ inputs.build-cache-key }}
+
+      - name: Install SSH Key
+        if: steps.cache.outputs.cache-hit == 'true'
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ inputs.ssh-key }}
+          known_hosts: '--placeholder-host'
+
+      - name: Adding known hosts
+        run: ssh-keygen -H ${{ inputs.ssh-host }} >> ~/.ssh/known_hosts
+
+      - name: Deploy with rsync
+        run: rsync -avzn ./ ${{ inputs.ssh-user }}@${{ inputs.ssh-host }}:${{ inputs.deployment-destination }}
