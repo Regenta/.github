@@ -41,7 +41,7 @@ jobs:
 
       - name: Adding known hosts
         if: steps.cache.outputs.cache-hit == 'true'
-        run: ssh-keygen -H ${{ secrets.ssh-host }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H ${{ secrets.ssh-host }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
         if: steps.cache.outputs.cache-hit == 'true'
