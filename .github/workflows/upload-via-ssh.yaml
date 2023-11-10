@@ -43,9 +43,18 @@ jobs:
         if: steps.cache.outputs.cache-hit == 'true'
         run: ssh-keyscan -H ${{ secrets.ssh-host }} >> ~/.ssh/known_hosts
 
+      - name: Remove redundant files
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: |
+          rm -r build/.git
+          rm -r build/.github
+          rm -r build/node_modules
+          rm -r build/tests
+          rm -r build/.env.local
+
       - name: Create archive
         if: steps.cache.outputs.cache-hit == 'true'
-        run: tar --exclude='./node_modules' --exclude='./.github' --exclude='./tests' --exclude='.env.local' --exclude='./.git' -zcvf build.tar.gz build
+        run: tar -zcvf build.tar.gz build
 
       - name: Deploy with scp
         if: steps.cache.outputs.cache-hit == 'true'
