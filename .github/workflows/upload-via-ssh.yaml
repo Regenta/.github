@@ -26,36 +26,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore cached build
-        id: cache
         uses: actions/cache@v3
         with:
           key: ${{ inputs.build-cache-key }}
-          path: ./build
+          path: ./
+          fail-on-cache-miss: true
 
       - name: Install SSH Key
-        if: steps.cache.outputs.cache-hit == 'true'
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.ssh-key }}
           known_hosts: '--placeholder-host'
 
       - name: Adding known hosts
-        if: steps.cache.outputs.cache-hit == 'true'
         run: ssh-keyscan -H ${{ secrets.ssh-host }} >> ~/.ssh/known_hosts
 
       - name: Remove redundant files
-        if: steps.cache.outputs.cache-hit == 'true'
         run: |
-          rm -r build/.git
-          rm -r build/.github
-          rm -r build/node_modules
-          rm -r build/tests
-          rm -r build/.env.local
+          rm -r ./.git
+          rm -r ./.github
+          rm -r ./node_modules
+          rm -r ./tests
+          rm -r ./.env.local
 
       - name: Create archive
-        if: steps.cache.outputs.cache-hit == 'true'
-        run: tar -zcvf build.tar.gz build
+        run: tar -zcvf build.tar.gz .
 
       - name: Deploy with scp
-        if: steps.cache.outputs.cache-hit == 'true'
         run: scp ./build.tar.gz ${{ secrets.ssh-user }}@${{ secrets.ssh-host }}:${{ secrets.deployment-destination }}
