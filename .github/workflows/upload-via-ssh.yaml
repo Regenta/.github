@@ -43,11 +43,11 @@ jobs:
 
       - name: Remove redundant files
         run: |
-          rm -r ./.git
-          rm -r ./.github
-          rm -r ./node_modules
-          rm -r ./tests
-          rm -r ./.env.local
+          rm -rf ./.git
+          rm -rf ./.github
+          rm -rf ./node_modules
+          rm -rf ./tests
+          rm -rf ./.env.local
 
       - name: Create archive
         run: tar -zcvf ../build.tar.gz .
